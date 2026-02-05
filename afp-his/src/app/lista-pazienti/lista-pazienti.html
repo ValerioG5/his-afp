@@ -1,0 +1,17 @@
+<!--<p>lista-pazienti works!</p>-->
+<!--<app-card></app-card>-->
+<div 
+    class="flex flex-wrap flex-row gap-4 p-4"
+>
+    @for (pz of listaPazienti(); track pz.braccialetto){
+        <app-card 
+        
+            [paziente]=pz>
+    
+        </app-card>
+    
+    } @empty {
+        <h1>Nessun paziente gay</h1>
+    
+    }
+</div>
