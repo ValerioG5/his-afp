@@ -22,7 +22,10 @@ export interface Paziente {
 })
 export class Card {
   paziente = input.required<Paziente>() 
-
+  borderTop = true;
+    setBorder() {
+      return (this.borderTop ? 'border-t-8' :' border-b-8');
+    }
     setColoreDiStato() {
       switch (this.paziente().codiceColore){
         case 'ROSSO':

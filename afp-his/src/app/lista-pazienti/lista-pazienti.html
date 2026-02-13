@@ -1,15 +1,34 @@
 <!--<p>lista-pazienti works!</p>-->
 <!--<app-card></app-card>-->
+<input
+    pInputText
+    type="text"
+    [(ngModel)]="nomePaziente"
+>
+<p>Nome PZ: {{ nomePaziente() || 'none'}}</p>
+<hr>
+@let srv = HealthStatus()?.service;
+@let db = HealthStatus()?.database;
+@let uptime = HealthStatus()?.uptime;
+
+
+
+
+<ul>
+    <li> Service:{{ srv || 'KO' }} </li>
+    <li> Database:{{ db || 'KO' }} </li>
+    <li> Uptime:{{ uptime || 'KO' }} </li>
+</ul>
 <div 
     class="flex flex-wrap flex-row gap-4 p-4"
 >
-    @for (pz of listaPazienti(); track pz.braccialetto){
+    @for (pz of filteredList(); track pz.braccialetto){
         <app-card 
         
             [paziente]=pz>
     
         </app-card>
-    
+        <p-button label="puzzo" (onClick)="editNomePaziente(pz.nome)"></p-button>
     } @empty {
         <h1>Nessun paziente gay</h1>
     
