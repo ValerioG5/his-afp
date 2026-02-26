@@ -1,11 +1,13 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
-import { CardPz, Paziente } from '../card-pz/card-pz';
+import { Component, computed, inject, model } from '@angular/core';
+import { CardPz } from '../card-pz/card-pz';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { SystemStatus } from '../core/SystemStatus/system-status';
 import { StatoAPI } from '../ui/stato-api/stato-api';
+import { Paziente } from '../core/Pazienti/Pazienti.model';
+import { PatientManager } from '../core/Pazienti/patient-manager';
 
 interface Response<T> {
   status: string;
@@ -19,59 +21,9 @@ interface Response<T> {
   styleUrl: './lista-pz.scss',
 })
 export class ListaPz {
+  readonly PatientManager = inject(PatientManager);
   nomePaziente = model<string>('');
-  listaPz = signal<Paziente[]>([
-    {
-      braccialetto: 'PR234',
-      codiceColore: 'VERDE',
-      cognome: 'Rocchio',
-      eta: 25,
-      id: '23',
-      nome: 'Pietro',
-      note: 'TRauma',
-      patologia: 'C19',
-    },
-    {
-      braccialetto: 'BR0034',
-      codiceColore: 'ARANCIONE',
-      cognome: 'Brazorf',
-      eta: 25,
-      id: '1',
-      nome: 'Ajeje',
-      note: 'TRauma',
-      patologia: 'C19',
-    },
-    {
-      braccialetto: 'LSD',
-      codiceColore: 'ROSSO',
-      cognome: 'Winky',
-      eta: 25,
-      id: '1',
-      nome: 'Tinky',
-      note: 'TRauma',
-      patologia: 'C19',
-    },
-    {
-      braccialetto: 'LSD',
-      codiceColore: 'AZZURRO',
-      cognome: 'Winky',
-      eta: 25,
-      id: '1',
-      nome: 'Tinky',
-      note: 'TRauma',
-      patologia: 'C19',
-    },
-    {
-      braccialetto: 'LSD',
-      codiceColore: 'AZZURRO',
-      cognome: 'Winky',
-      eta: 25,
-      id: '1',
-      nome: 'Tinky',
-      note: 'TRauma',
-      patologia: 'C19',
-    },
-  ]);
+  listaPz = this.PatientManager.listaPZ;
 
   healthStatus = inject(SystemStatus).statoAPI;
 
