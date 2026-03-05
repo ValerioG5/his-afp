@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'his-modifica-pz',
@@ -9,15 +8,5 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModificaPz {
-  id = input<string>('');
-  readonly #router = inject(Router);
-
-  constructor() {
-    effect(() => {
-      if (this.id() === undefined || this.id() === '') {
-        console.error('ID del paziente non fornito. Navigazione alla lista dei pazienti.');
-        this.#router.navigate(['/lista-pz']);
-      }
-    });
-  }
+  patientId = input<string>();
 }

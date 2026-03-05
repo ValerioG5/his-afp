@@ -11,7 +11,10 @@
     </p>
 
     <ng-template #footer>
-      <p-button label="Dimetti"></p-button>
+      <p-button
+        (onClick)="navigateToSchedaPaziente()"
+        label="Modifica"
+      />
     </ng-template>
   </p-card>
 </div>

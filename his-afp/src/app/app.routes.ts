@@ -1,31 +1,29 @@
 import { Routes } from '@angular/router';
-import { ListaPz } from './features/lista-pz/lista-pz';
-import { AccettazionePz } from './features/accettazione-pz/accettazione-pz';
-import { ModificaPz } from './features/modifica-pz/modifica-pz';
-import { StatoServizi } from './features/stato-servizi/stato-servizi';
 
 export const routes: Routes = [
   {
     path: 'lista-pz',
-    component: ListaPz,
+    loadComponent: () => import('./features/lista-pz/lista-pz').then((m) => m.ListaPz),
   },
   {
     path: 'accettazione-pz',
-    component: AccettazionePz,
+    loadComponent: () =>
+      import('./features/accettazione-pz/accettazione-pz').then((m) => m.AccettazionePz),
   },
-  //
   {
     path: 'modifica-pz',
-    component: ModificaPz,
+    // component: ModificaPz,
+    loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),
   },
   {
     // /modifica-pz?id=2
-    path: 'modifica-pz:id',
-    component: ModificaPz,
+    path: 'modifica-pz:patientId',
+    loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),
   },
   {
     path: 'stato-servizi',
-    component: StatoServizi,
+    loadComponent: () =>
+      import('./features/stato-servizi/stato-servizi').then((m) => m.StatoServizi),
   },
   {
     path: '',
