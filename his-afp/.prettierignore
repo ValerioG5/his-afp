@@ -1,0 +1,10 @@
+# Build & Dependencies
+dist
+node_modules
+coverage
+.angular
+# Configs & Assets
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+src/assets

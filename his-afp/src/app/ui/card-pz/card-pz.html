@@ -1,0 +1,17 @@
+<div class="mb-4 p-4">
+  <p-card
+    class="w-2xs {{setBorder()}} {{setColoreDiStato()}}"
+    header="{{paziente().cognome}} {{paziente().nome}}"
+    subheader="{{paziente().braccialetto}} - {{paziente().codiceColore}}"
+  >
+    <p>
+      <b>{{ paziente().patologia }}</b>
+      <br>
+      Note Triage: {{ paziente().note }}
+    </p>
+
+    <ng-template #footer>
+      <p-button label="Dimetti"></p-button>
+    </ng-template>
+  </p-card>
+</div>

@@ -1,0 +1,30 @@
+@let srv = systemStatus.statoAPI().service;
+@let db = systemStatus.statoAPI().database;
+@let uptime = systemStatus.statoAPI().uptime;
+
+<ul>
+  <li>Service:
+    <p-tag
+      [severity]="srv === 'UP' ? 'success' : 'danger'"
+      value="{{ srv }}"
+    />
+  </li>
+  <li>Database:
+    <p-tag
+      [severity]="db === 'CONNECTED' ? 'success' : 'danger'"
+      value="{{ db }}"
+    />
+  </li>
+  <li>Uptime:
+    <p-tag
+      [severity]="uptime > 0 ? 'success' : 'danger'"
+      value="{{ uptime }}"
+    />
+  </li>
+  <li>
+    <p-button
+      (onClick)="systemStatus.fetchStatoAPI()"
+      label="Refresh"
+    />
+  </li>
+</ul>

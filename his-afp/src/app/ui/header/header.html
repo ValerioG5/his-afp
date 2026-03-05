@@ -1,0 +1,40 @@
+<header
+  class="flex flex-row items-center shadow-md backdrop-opacity-5"
+>
+  <!-- LOGO -->
+  <div
+    class="flex items-center justify-center p-1"
+  >
+    <img alt="logoASUIT" class="w-40" src="logo-asuit.svg">
+  </div>
+  <!-- AZIENDA: Località + Reparto -->
+  <div
+    class="pl-1"
+  >
+    <h1 class="text-4xl font-bold text-primary">Pronto Soccorso</h1>
+    <p class="text-md text-gray-800 dark:text-gray-400">Presidio Ospedaliero di Arco</p>
+  </div>
+  <!-- AZIONI -->
+  <nav
+    class="flex flex-row items-center gap-3 pl-4"
+  >
+    <p-button
+      label="Lista PZ"
+      routerLink="/lista-pz"
+    />
+    <p-button
+      label="Accettazione PZ"
+      routerLink="/accettazione-pz"
+    />
+    <p-button
+      label="Stato Servizi"
+      routerLink="/stato-servizi"
+    />
+  </nav>
+
+  <div
+    class="ml-auto mr-4"
+  >
+    <his-darckmode-selector/>
+  </div>
+</header>
