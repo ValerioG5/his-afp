@@ -2,6 +2,6 @@
   (onClick)="toggleDarkMode()"
   [rounded]="true"
   [text]="true"
-  icon="pi pi-sun"
+  [icon]="themeService.isDarkMode() ? 'pi pi-moon' : 'pi pi-sun'"
   severity="secondary"
 />

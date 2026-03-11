@@ -35,4 +35,5 @@ export const routes: Routes = [
     redirectTo: 'lista-pz',
     pathMatch: 'full',
   },
+  
 ];

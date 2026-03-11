@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Header } from './ui/header/header';
+import { themeService } from './core/theme/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,6 @@ import { Header } from './ui/header/header';
   styleUrl: './app.scss',
 })
 export class App {
+  private readonly themeService = inject(themeService);
   protected readonly title = signal('his-afp');
 }
