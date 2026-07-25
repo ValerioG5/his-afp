@@ -4,6 +4,7 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
@@ -23,6 +24,7 @@ import { User, UserRole } from '../../core/models/user.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     TableModule,
     ButtonModule,
     InputTextModule,
