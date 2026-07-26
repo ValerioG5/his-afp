@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,25 +9,26 @@ import {
   Validators,
 } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
+import { Message } from 'primeng/message';
 import { GestionePersonaleService } from '../../core/Risorse/gestione-personale.service';
 import { Observable, of, timer } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { User, UserRole } from '../../core/models/user.model';
+import { CreateUserPayload, User, UserRole } from '../../core/models/user.model';
 
 @Component({
   selector: 'his-gestione-personale',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     TableModule,
-    ButtonModule,
-    InputTextModule,
+    Button,
+    InputText,
     Select,
+    Message,
   ],
   templateUrl: './gestione-personale.html',
   styleUrl: './gestione-personale.scss',
@@ -38,7 +38,7 @@ export class GestionePersonale implements OnInit {
   private readonly fb = inject(FormBuilder);
   public readonly personaleService = inject(GestionePersonaleService);
 
-  public roleOptions = [
+  public readonly roleOptions = [
     { label: 'Medico', value: 'DOC' },
     { label: 'Infermiere', value: 'INF' },
     { label: 'Amministrativo', value: 'AMM' },
@@ -58,22 +58,41 @@ export class GestionePersonale implements OnInit {
     this.personaleService.fetchUsers();
   }
 
-  // Async Validator per controllare l'username
+  checkFormControl(control: string) {
+    const fc = this.userForm.get(control);
+    return fc?.invalid && (fc.touched || fc.dirty);
+  }
+
+  checkFormControlError(control: string, err: string) {
+    const fc = this.userForm.get(control);
+
+    if (fc && fc.hasError(err)) {
+      return fc.getError(err);
+    }
+
+    return null;
+  }
+
+  isUsernameAvailable() {
+    const fc = this.userForm.get('username');
+    return fc?.valid && (fc.touched || fc.dirty) && fc.value;
+  }
+
   private usernameAsyncValidator(control: AbstractControl): Observable<ValidationErrors | null> {
-    if (!control.value) {
+    if (!control.value || control.value.length < 3) {
       return of(null);
     }
-    // Aggiungo un debounce usando timer per evitare troppe chiamate al backend
+
     return timer(300).pipe(
       switchMap(() => this.personaleService.checkUsernameAvailability(control.value)),
       map((isAvailable) => (isAvailable ? null : { usernameTaken: true })),
-      catchError(() => of(null)) // In caso di errore ignoriamo la validazione
+      catchError(() => of(null)),
     );
   }
 
   public onSubmit(): void {
     if (this.userForm.valid) {
-      this.personaleService.createUser(this.userForm.value).subscribe({
+      this.personaleService.createUser(this.userForm.value as CreateUserPayload).subscribe({
         next: () => {
           this.userForm.reset({ role: 'DOC' });
         },
@@ -81,12 +100,18 @@ export class GestionePersonale implements OnInit {
           console.error('Errore durante la creazione:', err);
         },
       });
+    } else {
+      this.userForm.markAllAsTouched();
     }
   }
 
   public onRoleChange(user: User, newRole: UserRole): void {
     if (user.role !== newRole) {
-      this.personaleService.editUserRole(user.id, newRole).subscribe();
+      this.personaleService.editUserRole(user.id, newRole).subscribe({
+        error: (err) => {
+          console.error('Errore durante la modifica del ruolo:', err);
+        },
+      });
     }
   }
 }

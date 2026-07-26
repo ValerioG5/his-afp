@@ -2,110 +2,141 @@
   <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Gestione Personale</h1>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Form di Inserimento (1/3 su LG) -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Nuovo Operatore</h2>
-      
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
-        
+
+      <form (submit)="onSubmit()" [formGroup]="userForm" class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
-          <label for="username" class="font-medium text-gray-600 dark:text-gray-300">Username</label>
-          <input 
-            pInputText 
-            id="username" 
-            formControlName="username" 
-            placeholder="Inserisci username" 
+          <label class="font-medium text-gray-600 dark:text-gray-300" for="username">Username</label>
+          <input
+            [invalid]="checkFormControl('username')"
             class="w-full"
-            [ngClass]="{'ng-invalid ng-dirty': userForm.get('username')?.invalid && (userForm.get('username')?.dirty || userForm.get('username')?.touched)}"
+            formControlName="username"
+            id="username"
+            pInputText
+            placeholder="Inserisci username"
+            type="text"
           />
-          <small class="text-red-500" *ngIf="userForm.get('username')?.hasError('required') && userForm.get('username')?.touched">L'username è obbligatorio.</small>
-          <small class="text-red-500" *ngIf="userForm.get('username')?.hasError('minlength') && userForm.get('username')?.touched">L'username deve avere almeno 3 caratteri.</small>
-          <small class="text-red-500 font-medium" *ngIf="userForm.get('username')?.hasError('usernameTaken') && userForm.get('username')?.touched">
-            <i class="pi pi-exclamation-triangle mr-1"></i> Questo username è già in uso. Scegline un altro.
-          </small>
-          <small class="text-green-500 font-medium" *ngIf="userForm.get('username')?.valid && userForm.get('username')?.touched && userForm.get('username')?.value">
-            <i class="pi pi-check mr-1"></i> Username disponibile!
-          </small>
+          @if (checkFormControl('username')) {
+            @if (checkFormControlError('username', 'required')) {
+              <p-message severity="error" variant="simple">L'username è obbligatorio.</p-message>
+            }
+            @if (checkFormControlError('username', 'minlength')) {
+              <p-message severity="error" variant="simple">
+                L'username deve avere almeno
+                {{ checkFormControlError('username', 'minlength').requiredLength }} caratteri.
+              </p-message>
+            }
+            @if (checkFormControlError('username', 'usernameTaken')) {
+              <p-message severity="error" variant="simple">
+                Questo username è già in uso. Scegline un altro.
+              </p-message>
+            }
+          }
+          @if (isUsernameAvailable()) {
+            <p-message severity="success" variant="simple">Username disponibile.</p-message>
+          }
         </div>
 
         <div class="flex flex-col gap-1">
-          <label for="password" class="font-medium text-gray-600 dark:text-gray-300">Password</label>
-          <input 
-            pInputText 
+          <label class="font-medium text-gray-600 dark:text-gray-300" for="password">Password</label>
+          <input
+            [invalid]="checkFormControl('password')"
+            class="w-full"
+            formControlName="password"
+            id="password"
+            pInputText
+            placeholder="Inserisci password"
             type="password"
-            id="password" 
-            formControlName="password" 
-            placeholder="Inserisci password" 
-            class="w-full"
           />
-          <small class="text-red-500" *ngIf="userForm.get('password')?.hasError('required') && userForm.get('password')?.touched">La password è obbligatoria.</small>
+          @if (checkFormControl('password')) {
+            @if (checkFormControlError('password', 'required')) {
+              <p-message severity="error" variant="simple">La password è obbligatoria.</p-message>
+            }
+            @if (checkFormControlError('password', 'minlength')) {
+              <p-message severity="error" variant="simple">
+                La password deve avere almeno
+                {{ checkFormControlError('password', 'minlength').requiredLength }} caratteri.
+              </p-message>
+            }
+          }
         </div>
 
         <div class="flex flex-col gap-1">
-          <label for="role" class="font-medium text-gray-600 dark:text-gray-300">Ruolo</label>
-          <p-select 
-            [options]="roleOptions" 
-            formControlName="role" 
-            optionLabel="label" 
+          <label class="font-medium text-gray-600 dark:text-gray-300" for="role">Ruolo</label>
+          <p-select
+            [options]="roleOptions"
+            class="w-full"
+            formControlName="role"
+            id="role"
+            optionLabel="label"
             optionValue="value"
             placeholder="Seleziona un ruolo"
-            class="w-full"
             styleClass="w-full"
           ></p-select>
         </div>
 
-        <p-button 
-          label="Salva Operatore" 
-          type="submit" 
-          [disabled]="userForm.invalid || userForm.pending" 
+        <p-button
+          [disabled]="userForm.invalid || userForm.pending"
           class="mt-2"
-          styleClass="w-full"
           icon="pi pi-user-plus"
+          label="Salva Operatore"
+          styleClass="w-full"
+          type="submit"
         ></p-button>
       </form>
     </div>
 
-    <!-- Lista Operatori (2/3 su LG) -->
     <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Elenco Staff</h2>
-      
-      <p-table [value]="personaleService.users()" [paginator]="true" [rows]="10" styleClass="p-datatable-striped" responsiveLayout="scroll">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Ruolo</th>
-            <th>Stato</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-user>
-          <tr>
-            <td>{{ user.id }}</td>
-            <td class="font-semibold">{{ user.username }}</td>
-            <td>
-              <p-select 
-                [options]="roleOptions" 
-                [ngModel]="user.role" 
-                (ngModelChange)="onRoleChange(user, $event)"
-                optionLabel="label" 
-                optionValue="value"
-                appendTo="body"
-                styleClass="w-full sm:w-auto"
-              ></p-select>
-            </td>
-            <td>
-              <span [class]="user.isActive ? 'text-green-500 font-bold' : 'text-red-500 font-bold'">
-                {{ user.isActive ? 'Attivo' : 'Disattivato' }}
-              </span>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" class="text-center p-4">Nessun operatore trovato.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+
+      @if (personaleService.isLoading()) {
+        <p-message severity="info" variant="simple">Caricamento elenco operatori...</p-message>
+      } @else {
+        <p-table
+          [paginator]="true"
+          [rows]="10"
+          [value]="personaleService.users()"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-striped"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Ruolo</th>
+              <th>Stato</th>
+            </tr>
+          </ng-template>
+          <ng-template let-user pTemplate="body">
+            <tr>
+              <td>{{ user.id }}</td>
+              <td class="font-semibold">{{ user.username }}</td>
+              <td>
+                <p-select
+                  (ngModelChange)="onRoleChange(user, $event)"
+                  [ngModel]="user.role"
+                  [options]="roleOptions"
+                  appendTo="body"
+                  optionLabel="label"
+                  optionValue="value"
+                  styleClass="w-full sm:w-auto"
+                ></p-select>
+              </td>
+              <td>
+                <span [class]="user.isActive ? 'text-green-500 font-bold' : 'text-red-500 font-bold'">
+                  {{ user.isActive ? 'Attivo' : 'Disattivato' }}
+                </span>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td class="text-center p-4" colspan="4">Nessun operatore trovato.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
     </div>
   </div>
 </div>
