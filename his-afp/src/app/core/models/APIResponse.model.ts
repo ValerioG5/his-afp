@@ -1,4 +1,7 @@
-export interface APIResponse<T> {
-  status: string;
-  data: T;
+export interface APIResponse<T = any> {
+  status: 'success' | 'fail' | 'error';
+  data?: T;
+  results?: number;
+  message?: string;
+  code?: number;
 }

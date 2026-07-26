@@ -1,6 +1,14 @@
 <div class="p-6">
   <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Gestione Personale</h1>
 
+  <!-- Messaggi di feedback -->
+  @if (successMessage()) {
+    <p-message severity="success" [text]="successMessage()" class="mb-4 w-full"></p-message>
+  }
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()" class="mb-4 w-full"></p-message>
+  }
+
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">Nuovo Operatore</h2>
@@ -140,3 +148,4 @@
     </div>
   </div>
 </div>
+
