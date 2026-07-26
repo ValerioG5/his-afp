@@ -2,8 +2,8 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { APIResponse } from '../models/APIResponse.model';
-import { User, UserRole } from '../models/user.model';
-import { Observable, map } from 'rxjs';
+import { CreateUserPayload, User, UserRole } from '../models/user.model';
+import { finalize, map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +13,14 @@ export class GestionePersonaleService {
   readonly #users = signal<User[]>([]);
   users = this.#users.asReadonly();
 
+  readonly #isLoading = signal<boolean>(false);
+  isLoading = this.#isLoading.asReadonly();
+
   public fetchUsers() {
+    this.#isLoading.set(true);
     this.#http
       .get<APIResponse<User[]>>(`${environment.apiUrl}/users`)
+      .pipe(finalize(() => this.#isLoading.set(false)))
       .subscribe({
         next: (res: APIResponse<User[]>) => {
           this.#users.set(res.data);
@@ -32,15 +37,13 @@ export class GestionePersonaleService {
       .pipe(map((res) => res.data.available));
   }
 
-  public createUser(userData: Partial<User> & { password?: string }): Observable<User> {
-    return this.#http
-      .post<APIResponse<User>>(`${environment.apiUrl}/users`, userData)
-      .pipe(
-        map((res) => {
-          this.fetchUsers(); // Refresh list after creation
-          return res.data;
-        })
-      );
+  public createUser(userData: CreateUserPayload): Observable<User> {
+    return this.#http.post<APIResponse<User>>(`${environment.apiUrl}/users`, userData).pipe(
+      map((res) => {
+        this.fetchUsers();
+        return res.data;
+      }),
+    );
   }
 
   public editUserRole(userId: number, role: UserRole): Observable<User> {
@@ -48,9 +51,9 @@ export class GestionePersonaleService {
       .patch<APIResponse<User>>(`${environment.apiUrl}/users/${userId}/editrole`, { role })
       .pipe(
         map((res) => {
-          this.fetchUsers(); // Refresh list after edit
+          this.fetchUsers();
           return res.data;
-        })
+        }),
       );
   }
 }
