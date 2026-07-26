@@ -6,3 +6,9 @@ export interface User {
   role: UserRole;
   isActive: boolean;
 }
+
+export interface CreateUserPayload {
+  username: string;
+  password: string;
+  role: UserRole;
+}
