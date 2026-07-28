@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { GestioneRisorse } from '../../core/Risorse/gestione-risorse';
 import { InputText } from 'primeng/inputtext';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,11 +9,18 @@ import { SelectModule } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { Fieldset } from 'primeng/fieldset';
 import { PatientManager } from '../../core/Pazienti/patient-manager';
-import { PatientAdmission } from '../../core/Pazienti/Pazienti.model';
+import {
+  PatientAdmission,
+  PatientAnagraficaPrefill,
+  PatientRecord,
+  PatientSearchOutcome,
+} from '../../core/Pazienti/Pazienti.model';
+import { RicercaPaziente } from '../ricerca-pz/ricerca-pz';
 
 @Component({
   selector: 'his-accettazione-pz',
   imports: [
+    RicercaPaziente,
     InputText,
     ReactiveFormsModule,
     Button,
@@ -43,6 +50,10 @@ export class AccettazionePz {
     },
   ];
 
+  searchOutcome = signal<PatientSearchOutcome>({ status: 'idle' });
+  showForm = computed(() => this.searchOutcome().status !== 'idle');
+  isExistingPatient = computed(() => this.searchOutcome().status === 'found');
+
   readonly #fb = inject(FormBuilder);
   paziente = this.#fb.group({
     anagrafica: this.#fb.group({
@@ -52,7 +63,6 @@ export class AccettazionePz {
       codiceFiscale: [
         '',
         [Validators.required, Validators.pattern('[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]')],
-        // {pattern: {requiredPattern: '^[a-zA-Z ]*$', actualValue: '1'}}
       ],
       sesso: ['', [Validators.required]],
     }),
@@ -64,11 +74,31 @@ export class AccettazionePz {
     }),
   });
 
+  onSearchResult(outcome: PatientSearchOutcome) {
+    this.searchOutcome.set(outcome);
+
+    if (outcome.status === 'found') {
+      this.#populateForm(outcome.patient);
+      this.paziente.controls.anagrafica.disable();
+      return;
+    }
+
+    if (outcome.status === 'not-found') {
+      this.paziente.controls.anagrafica.enable();
+      this.paziente.reset();
+      this.#applyPrefill(outcome.prefill);
+      return;
+    }
+
+    this.paziente.controls.anagrafica.enable();
+    this.paziente.reset();
+  }
+
   checkFormControl(control: string) {
     const fc = this.paziente.get(control);
-    // nome.invalid && (nome.touched || nome.dirty)
     return fc?.invalid && (fc.touched || fc.dirty);
   }
+
   checkFormControlError(control: string, err: string) {
     const fc = this.paziente.get(control);
 
@@ -78,12 +108,46 @@ export class AccettazionePz {
       return null;
     }
   }
+
   onSubmit() {
     if (this.paziente.valid) {
-      console.log(this.paziente.value);
-      this.patientManager.admitPatient(this.paziente.value as PatientAdmission);
+      const payload = this.paziente.getRawValue() as PatientAdmission;
+      this.patientManager.admitPatient(payload);
     } else {
       this.paziente.markAllAsTouched();
     }
+  }
+
+  onResetForm() {
+    this.searchOutcome.set({ status: 'idle' });
+    this.paziente.controls.anagrafica.enable();
+    this.paziente.reset();
+  }
+
+  #populateForm(patient: PatientRecord) {
+    this.paziente.patchValue({
+      anagrafica: {
+        nome: patient.nome,
+        cognome: patient.cognome,
+        dataNascita: new Date(patient.dataNascita),
+        codiceFiscale: patient.codiceFiscale,
+        sesso: patient.sesso,
+      },
+    });
+  }
+
+  #applyPrefill(prefill?: PatientAnagraficaPrefill) {
+    if (!prefill) {
+      return;
+    }
+
+    this.paziente.patchValue({
+      anagrafica: {
+        nome: prefill.nome ?? '',
+        cognome: prefill.cognome ?? '',
+        dataNascita: prefill.dataNascita ? new Date(prefill.dataNascita) : '',
+        codiceFiscale: prefill.codiceFiscale ?? '',
+      },
+    });
   }
 }

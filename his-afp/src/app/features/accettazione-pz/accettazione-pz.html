@@ -1,3 +1,18 @@
+<h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Accettazione Paziente</h1>
+
+<his-ricerca-pz (searchResult)="onSearchResult($event)" />
+
+@if (showForm()) {
+  @if (isExistingPatient()) {
+    <p-message class="mb-4" severity="success" variant="simple">
+      Paziente trovato in anagrafica. I dati anagrafici sono precompilati: completa solo i dati sanitari.
+    </p-message>
+  } @else {
+    <p-message class="mb-4" severity="info" variant="simple">
+      Nessun paziente trovato. Inserisci i dati anagrafici per creare una nuova scheda.
+    </p-message>
+  }
+
 <form (submit)="onSubmit()" [formGroup]="paziente">
   <div class="flex flex-row flex-wrap gap-8">
     <p-fieldset formGroupName="anagrafica" legend="Dati anagrafici">
@@ -250,10 +265,11 @@
       type="submit"
     />
     <p-button
-      (onClick)="paziente.reset()"
-      label="Reset"
+      (onClick)="onResetForm()"
+      label="Annulla"
       severity="warn"
       variant="outlined"
     />
   </div>
 </form>
+}
