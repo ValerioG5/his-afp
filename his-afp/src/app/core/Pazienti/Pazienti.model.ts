@@ -60,3 +60,37 @@ export interface PatientAdmissionRes {
   id: number;
   braccialetto: string;
 }
+
+export interface PatientRecord {
+  id: number;
+  nome: string;
+  cognome: string;
+  dataNascita: string;
+  codiceFiscale: string;
+  sesso: string;
+}
+
+export interface PatientAnagraficaPrefill {
+  nome?: string;
+  cognome?: string;
+  dataNascita?: string;
+  codiceFiscale?: string;
+}
+
+export type PatientSearchRequest =
+  | { mode: 'cf'; codiceFiscale: string }
+  | { mode: 'anagrafica'; nome: string; cognome: string; dataNascita: string };
+
+export type PatientSearchOutcome =
+  | { status: 'idle' }
+  | { status: 'found'; patient: PatientRecord }
+  | { status: 'not-found'; prefill?: PatientAnagraficaPrefill };
+
+export interface PatientSearchRow {
+  id: number;
+  nome: string;
+  cognome: string;
+  data_nascita: string;
+  codice_fiscale: string;
+  sex: string;
+}
