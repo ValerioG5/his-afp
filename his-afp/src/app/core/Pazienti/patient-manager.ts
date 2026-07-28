@@ -1,9 +1,18 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { PatientAdmission, PatientAdmissionRes, Paziente, PazienteDTO } from './Pazienti.model';
-import { HttpClient } from '@angular/common/http';
+import {
+  PatientAdmission,
+  PatientAdmissionRes,
+  PatientRecord,
+  PatientSearchRequest,
+  PatientSearchRow,
+  Paziente,
+  PazienteDTO,
+} from './Pazienti.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { APIResponse } from '../models/APIResponse.model';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -104,5 +113,30 @@ export class PatientManager {
       return fullName.includes(name.toLowerCase());
     });
     this.#listaPZFiltered.set(filtered);
+  }
+
+  public searchPatient(criteria: PatientSearchRequest): Observable<PatientRecord[]> {
+    const params =
+      criteria.mode === 'cf'
+        ? new HttpParams().set('cf', criteria.codiceFiscale)
+        : new HttpParams()
+            .set('nome', criteria.nome)
+            .set('cognome', criteria.cognome)
+            .set('data_nascita', criteria.dataNascita);
+
+    return this.#http
+      .get<APIResponse<PatientSearchRow[]>>(`${environment.apiUrl}/patients/search`, { params })
+      .pipe(map((res) => res.data.map((row) => this.#mapSearchRow(row))));
+  }
+
+  #mapSearchRow(row: PatientSearchRow): PatientRecord {
+    return {
+      id: row.id,
+      nome: row.nome,
+      cognome: row.cognome,
+      dataNascita: row.data_nascita,
+      codiceFiscale: row.codice_fiscale,
+      sesso: row.sex,
+    };
   }
 }
