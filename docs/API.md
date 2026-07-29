@@ -423,6 +423,40 @@ Aggiorna lo stato di avanzamento del paziente.
 }
 ```
 
+### Report Dimessi (Ultime 24h)
+
+Recupera i pazienti che sono stati dimessi dal Pronto Soccorso nelle ultime 24 ore.
+La tabella del frontend ordinabile per colonna permette di analizzare il turnover dei posti letto.
+
+* **Endpoint:** `GET /admissions/reports/discharged`
+* **Filtro backend:** `a.stato = 'DIM'` AND `data_ora_dimissione >= NOW() - INTERVAL '24 hours'`
+* **Ordinamento:** `data_ora_dimissione DESC`
+
+**Response (200 OK):**
+
+```json
+{
+  "status": "success",
+  "results": 2,
+  "data": [
+    {
+      "id": 45,
+      "braccialetto": "2024-0045",
+      "nome": "Mario",
+      "cognome": "Rossi",
+      "dataNascita": "1980-05-20",
+      "codiceFiscale": "RSSMRA80E20H501U",
+      "dataOraIngresso": "2024-01-22T09:15:00.000Z",
+      "dataOraDimissione": "2024-01-22T17:30:00.000Z"
+    }
+  ]
+}
+```
+
+**Errori:** Nessuno specifico (restituisce array vuoto se non ci sono dimissioni).
+
+---
+
 ## 5. Gestione personale sanitario (Utenti)
 
 Gestione anagrafica operatori e validazione asincrona.
