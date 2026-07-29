@@ -225,9 +225,12 @@ export const changeAdmissionsStatusByIDFn = catchAsync(async (req, res, next) =>
  */
 export const retrieveDischargedAdmissionsFn = catchAsync(async (req, res) => {
 	const query = `
-        SELECT a.braccialetto,
+        SELECT a.id,
+               a.braccialetto,
                p.nome,
                p.cognome,
+               p.data_nascita       AS "dataNascita",
+               p.codice_fiscale     AS "codiceFiscale",
                a.data_ora_ingresso   AS "dataOraIngresso",
                a.data_ora_dimissione AS "dataOraDimissione"
         FROM admissions a
