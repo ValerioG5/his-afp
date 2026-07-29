@@ -1,0 +1,51 @@
+<h1 class="text-2xl font-bold mb-4 text-primary">Report Dimessi (Ultime 24h)</h1>
+
+@if (error(); as errMsg) {
+  <div class="mb-4 p-3 bg-red-100 border-round text-red-700">{{ errMsg }}</div>
+}
+
+<p-table
+  [value]="patients()"
+  sortField="dataOraDimissione"
+  [sortOrder]="-1"
+  dataKey="id"
+  [loading]="loading()"
+  [stripedRows]="true"
+  [showGridlines]="true"
+  size="small"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex items-center justify-between">
+      <span>Elenco pazienti dimessi dal Pronto Soccorso nelle ultime 24 ore</span>
+      <p-button
+        label="Aggiorna"
+        icon="pi pi-refresh"
+        (click)="loadDischargedPatients()"
+        size="small"
+      />
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="braccialetto">Braccialetto <p-sortIcon /></th>
+      <th pSortableColumn="cognome">Cognome <p-sortIcon /></th>
+      <th pSortableColumn="nome">Nome <p-sortIcon /></th>
+      <th pSortableColumn="dataOraIngresso">Ingresso <p-sortIcon /></th>
+      <th pSortableColumn="dataOraDimissione">Dimissione <p-sortIcon /></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-pz>
+    <tr>
+      <td class="font-bold">{{ pz.braccialetto }}</td>
+      <td>{{ pz.cognome }}</td>
+      <td>{{ pz.nome }}</td>
+      <td>{{ pz.dataOraIngresso | date : 'dd/MM/yyyy HH:mm' }}</td>
+      <td>{{ pz.dataOraDimissione | date : 'dd/MM/yyyy HH:mm' }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="5" class="text-center">Nessun paziente dimesso nelle ultime 24 ore.</td>
+    </tr>
+  </ng-template>
+</p-table>
