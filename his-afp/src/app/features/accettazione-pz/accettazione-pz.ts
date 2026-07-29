@@ -129,7 +129,7 @@ export class AccettazionePz {
       anagrafica: {
         nome: patient.nome,
         cognome: patient.cognome,
-        dataNascita: new Date(patient.dataNascita),
+        dataNascita: patient.dataNascita ? new Date(patient.dataNascita).toISOString().split('T')[0] : '',
         codiceFiscale: patient.codiceFiscale,
         sesso: patient.sesso,
       },
@@ -145,7 +145,7 @@ export class AccettazionePz {
       anagrafica: {
         nome: prefill.nome ?? '',
         cognome: prefill.cognome ?? '',
-        dataNascita: prefill.dataNascita ? new Date(prefill.dataNascita) : '',
+        dataNascita: prefill.dataNascita ? new Date(prefill.dataNascita).toISOString().split('T')[0] : '',
         codiceFiscale: prefill.codiceFiscale ?? '',
       },
     });
