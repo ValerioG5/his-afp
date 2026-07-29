@@ -1,9 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { PatientAdmission, PatientAdmissionRes, Paziente, PazienteDTO } from './Pazienti.model';
+import { DischargedPatientDTO, PatientAdmission, PatientAdmissionRes, Paziente, PazienteDTO } from './Pazienti.model';
 import { HttpClient } from '@angular/common/http';
 import { APIResponse } from '../models/APIResponse.model';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,10 @@ export class PatientManager {
           console.error("Errore durante l'ammissione del paziente:", err);
         },
       });
+  }
+
+  public fetchDischargedPatients(): Observable<APIResponse<DischargedPatientDTO[]>> {
+    return this.#http.get<APIResponse<DischargedPatientDTO[]>>(`${environment.apiUrl}/admissions/reports/discharged`);
   }
 
   public updatePatientInfo(pzId: number, residenza: Pick<PatientAdmission, 'residenza'>) {
