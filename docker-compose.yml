@@ -8,8 +8,6 @@ services:
       POSTGRES_USER: sio_user
       POSTGRES_PASSWORD: sio_password
       POSTGRES_DB: sio_db
-    ports:
-      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -68,8 +66,10 @@ services:
       - "80:80"
       - "8080:8080"
       - "8999:8999"
+      - "5432:5432"    # TCP tunnel per il database
     volumes:
-      - ./gateway:/etc/nginx/conf.d/:ro
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - fe-sio
       - fe-prod
