@@ -79,7 +79,7 @@ his-afp
 Per avviare i servizi, eseguire il comando:
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 Questo comando costruisce e avvia i container definiti nel file `docker-compose.yml`.
@@ -87,7 +87,7 @@ Questo comando costruisce e avvia i container definiti nel file `docker-compose.
 Per fermare i servizi, eseguire:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 L'opzione `-v` rimuove anche i volumi associati, in modo da avere un ambiente pulito al successivo avvio.
@@ -95,13 +95,20 @@ L'opzione `-v` rimuove anche i volumi associati, in modo da avere un ambiente pu
 Per ricompilare un singolo servizio (es. backend), eseguire:
 
 ```bash
-docker-compose up -d --build --no-deps backend
+docker compose up -d --build --no-deps sio-backend-blue
 ```
 
 # Accessi
 
-- **Backend API:** `http://localhost:3000`
-- **Database PostgreSQL:** `localhost:5432` (user: `sio_user`, password: `sio_password`, database: `sio_db`)
+Tutto il traffico passa esclusivamente dal **Gateway** (unico container con porte esposte):
+
+| Servizio | URL | Note |
+|----------|-----|------|
+| Frontend PROD | `http://localhost:80` | Ambiente di produzione |
+| Frontend TEST | `http://localhost:8080` | Ambiente di test |
+| Frontend SVI | `http://localhost:8999` | Ambiente di sviluppo |
+| Backend API | `http://localhost/api/` | Proxy via Gateway |
+| Database | `localhost:5432` | Solo via tunnel Gateway (task-4) |
 
 # Test delle API
 
@@ -112,10 +119,16 @@ Per testare le API sono disponibili le collection Postman nella cartella `postma
 
 # Documentazione
 
-Allinterno della cartella `docs/` sono presenti documenti dettagliati riguardanti:
+All'interno della cartella `docs/` sono presenti documenti dettagliati riguardanti:
 
 - Documentazione delle API: [docs/API.md](docs/API.md)
 - Struttura del Database: [docs/DATABASE.md](docs/DATABASE.md)
+- **UF14 - Migrazione Architetturale**:
+  - [Panoramica Migrazione](docs/uf14-migrazione-architetturale.md)
+  - [Task 1 - Isolamento Infrastrutturale](docs/uf14-task-1.md)
+  - [Task 2 - Blue/Green API Switching](docs/uf14-task-2.md)
+  - [Task 3 - Zero-Downtime Backend & DB Migration](docs/uf14-task-3.md)
+  - [Task 4 - DB Tunnel via Gateway](docs/uf14-task-4.md)
 
 # Contribuire
 
