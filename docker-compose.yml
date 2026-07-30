@@ -1,4 +1,4 @@
-#version: "3.8"
+name: his-afp
 
 services:
   db:
@@ -8,17 +8,16 @@ services:
       POSTGRES_USER: sio_user
       POSTGRES_PASSWORD: sio_password
       POSTGRES_DB: sio_db
-    ports:
-      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend-net
+    restart: always
 
   backend:
     build: ./backend
     container_name: sio-backend
-    #    ports:
-    #      - "3000:3000"
     environment:
       DB_HOST: db
       DB_USER: sio_user
@@ -28,6 +27,8 @@ services:
       AUTH_ENABLED: "false"
     depends_on:
       - db
+    networks:
+      - backend-net
     restart: always
 
   fe-sio:
@@ -39,6 +40,8 @@ services:
     environment:
       APP_ENV: "SVI"
       APP_VERSION: "${SVI_VERSION}"
+    networks:
+      - frontend-net
 
   # AMBIENTE PRODUZIONE (BLUE)
   fe-prod:
@@ -50,6 +53,8 @@ services:
     environment:
       APP_ENV: "PROD"
       APP_VERSION: "${PROD_VERSION}"
+    networks:
+      - frontend-net
 
   fe-test:
     build:
@@ -60,6 +65,8 @@ services:
     environment:
       APP_ENV: "TEST"
       APP_VERSION: "${TEST_VERSION}"
+    networks:
+      - frontend-net
 
   gateway:
     image: nginx:alpine
@@ -74,7 +81,17 @@ services:
       - fe-sio
       - fe-prod
       - fe-test
+    networks:
+      - frontend-net
+      - backend-net
     restart: always
 
 volumes:
   pg_data:
+
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge
+    internal: true
